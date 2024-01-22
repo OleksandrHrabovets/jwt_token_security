@@ -21,6 +21,7 @@
     <java.version>17</java.version>
     <postgresql.version>42.5.4</postgresql.version>
     <flywaydb.version>9.21.0</flywaydb.version>
+    <mapstruct.version>1.5.5.Final</mapstruct.version>
     <lombok.version>1.18.26</lombok.version>
   </properties>
 
@@ -37,6 +38,16 @@
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
       <version>${flywaydb.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct</artifactId>
+      <version>${mapstruct.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mapstruct</groupId>
+      <artifactId>mapstruct-processor</artifactId>
+      <version>${mapstruct.version}</version>
     </dependency>
 
     <dependency>
@@ -70,6 +81,20 @@
               <artifactId>lombok</artifactId>
             </exclude>
           </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
+            <!-- other annotation processors -->
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
     </plugins>
