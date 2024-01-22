@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.util.Set;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,6 +19,6 @@ public class Role extends BaseEntity {
   private String name;
 
   @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-  Set<User> users;
+  List<User> users;
 
 }
