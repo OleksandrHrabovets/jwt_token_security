@@ -8,19 +8,23 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 import ua.oh.jwttokensecurity.model.User;
-import ua.oh.jwttokensecurity.repository.UserRepository;
+import ua.oh.jwttokensecurity.repository.RoleRepository;
 import ua.oh.jwttokensecurity.security.jwt.JwtUser;
+import ua.oh.jwttokensecurity.security.service.UserService;
 
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class JwtUserDetailService implements UserDetailsService {
 
-  private final UserRepository userRepository;
+  private final UserService userService;
+  private final RoleRepository roleRepository;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = userRepository.findByUsername(username)
+    User user = userService.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     JwtUser jwtUser = new JwtUser(user.getId(),
         user.getUsername(),

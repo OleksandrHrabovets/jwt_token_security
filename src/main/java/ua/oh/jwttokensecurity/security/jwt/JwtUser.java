@@ -3,14 +3,14 @@ package ua.oh.jwttokensecurity.security.jwt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @ToString(exclude = "password")
 public class JwtUser implements UserDetails {
 
@@ -26,18 +26,38 @@ public class JwtUser implements UserDetails {
   private final LocalDateTime updatedAt;
 
   @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return authorities;
+  }
+
+  @Override
+  public String getPassword() {
+    return password;
+  }
+
+  @Override
+  public String getUsername() {
+    return username;
+  }
+
+  @Override
   public boolean isAccountNonExpired() {
-    return false;
+    return true;
   }
 
   @Override
   public boolean isAccountNonLocked() {
-    return false;
+    return true;
   }
 
   @Override
   public boolean isCredentialsNonExpired() {
-    return false;
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return enabled;
   }
 
 }
