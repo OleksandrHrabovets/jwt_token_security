@@ -16,3 +16,8 @@ spring:
     url: ${DB_URL}
     user: ${DB_USER}
     password: ${DB_PASSWORD}
+
+jwt:
+  issuer: jwt_token_security
+  expiration: 3600
+  secret: ${SECRET}
