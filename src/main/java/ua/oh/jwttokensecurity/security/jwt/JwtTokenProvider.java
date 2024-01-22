@@ -1,6 +1,7 @@
 package ua.oh.jwttokensecurity.security.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -68,7 +69,7 @@ public class JwtTokenProvider {
 
   public String resolveToken(HttpServletRequest servletRequest) {
 
-    String bearerToken = servletRequest.getHeader("Authentication");
+    String bearerToken = servletRequest.getHeader("Authorization");
 
     if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
       return bearerToken.substring(BEARER_PREFIX.length());
@@ -78,10 +79,12 @@ public class JwtTokenProvider {
   }
 
   public boolean validateToken(String token) {
+    try {
+      Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
-    Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-
-    return claims.getExpiration().before(new Date());
-
+      return !claims.getExpiration().before(new Date());
+    } catch (JwtException | IllegalArgumentException e) {
+      throw new JwtAuthenticationException("JWT token is expired or invalid");
+    }
   }
 }

@@ -31,7 +31,7 @@ public class AuthController {
   public ResponseEntity<String> echo(Authentication authentication) {
 
     JwtUser user = (JwtUser) authentication.getPrincipal();
-    return ResponseEntity.ok("Hello, " + user.getUsername());
+    return ResponseEntity.ok("Hello, " + user);
 
   }
 
