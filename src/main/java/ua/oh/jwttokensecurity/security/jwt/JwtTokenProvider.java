@@ -8,11 +8,13 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import ua.oh.jwttokensecurity.security.JwtUserDetailService;
 
@@ -42,7 +44,8 @@ public class JwtTokenProvider {
     Date expirationDate = new Date(now.getTime() + expiration * 1000);
 
     Claims claims = Jwts.claims().setSubject(user.getUsername());
-    claims.put("roles", user.getAuthorities().toArray());
+    claims.put("roles",
+        user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
 
     return Jwts.builder()
         .setClaims(claims)
@@ -56,14 +59,15 @@ public class JwtTokenProvider {
 
   public Authentication getAuthentication(String token) {
 
-    UserDetails userDetails = jwtUserDetailService.loadUserByUsername(getUsername(token));
-    return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    List<String> roles = (List<String>) getClaims(token).get("roles");
+    return new UsernamePasswordAuthenticationToken(getUsername(token), "",
+        roles.stream().map(SimpleGrantedAuthority::new).toList());
 
   }
 
   private String getUsername(String token) {
 
-    return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
+    return getClaims(token).getSubject();
 
   }
 
@@ -80,11 +84,15 @@ public class JwtTokenProvider {
 
   public boolean validateToken(String token) {
     try {
-      Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+      Claims claims = getClaims(token);
 
       return !claims.getExpiration().before(new Date());
     } catch (JwtException | IllegalArgumentException e) {
       throw new JwtAuthenticationException("JWT token is expired or invalid");
     }
+  }
+
+  private Claims getClaims(String token) {
+    return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
   }
 }

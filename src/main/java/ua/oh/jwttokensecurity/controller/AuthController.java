@@ -15,7 +15,6 @@ import ua.oh.jwttokensecurity.dto.AuthResponseDto;
 import ua.oh.jwttokensecurity.model.User;
 import ua.oh.jwttokensecurity.security.jwt.JwtAuthenticationException;
 import ua.oh.jwttokensecurity.security.jwt.JwtTokenProvider;
-import ua.oh.jwttokensecurity.security.jwt.JwtUser;
 import ua.oh.jwttokensecurity.security.service.UserService;
 
 @RestController
@@ -30,8 +29,8 @@ public class AuthController {
   @GetMapping("/hello")
   public ResponseEntity<String> echo(Authentication authentication) {
 
-    JwtUser user = (JwtUser) authentication.getPrincipal();
-    return ResponseEntity.ok("Hello, " + user);
+    return ResponseEntity.ok(
+        "Hello, " + authentication.getPrincipal() + authentication.getAuthorities());
 
   }
 
